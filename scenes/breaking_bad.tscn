@@ -1,0 +1,329 @@
+[gd_scene load_steps=14 format=3 uid="uid://cgjxjnj2j3gns"]
+
+[ext_resource type="Texture2D" uid="uid://dwoghgv3lvjqw" path="res://Assets/background/BreakingBad.webp" id="1_b2o7j"]
+[ext_resource type="Texture2D" uid="uid://b6epk133qxpvx" path="res://Assets/clicker/Generators/BreakingBad/Mike.webp" id="2_5cvrr"]
+[ext_resource type="Texture2D" uid="uid://cv6lwpgau2qkd" path="res://Assets/clicker/Generators/BreakingBad/Saul.webp" id="3_wc8hc"]
+[ext_resource type="Texture2D" uid="uid://dqdn2lx50oeam" path="res://Assets/clicker/Generators/BreakingBad/Jesse.webp" id="4_cs4ns"]
+[ext_resource type="Texture2D" uid="uid://dloy5yo2q3l7n" path="res://Assets/clicker/Generators/BreakingBad/Gus.webp" id="5_rcsex"]
+[ext_resource type="Texture2D" uid="uid://cq3plmv12mscc" path="res://Assets/clicker/Generators/BreakingBad/Hector.webp" id="6_ikvfk"]
+[ext_resource type="Texture2D" uid="uid://frdgwklw7tod" path="res://Assets/clicker/Generators/BreakingBad/Tuco.webp" id="7_5nq14"]
+[ext_resource type="Texture2D" uid="uid://dsgd1l5xanci5" path="res://Assets/clicker/Generators/BreakingBad/Walter.webp" id="8_tpqfm"]
+[ext_resource type="StyleBox" uid="uid://bw8rbeeeexnuf" path="res://styles/genPrice.tres" id="9_51i6y"]
+[ext_resource type="AudioStream" uid="uid://dmwoxogrd6rp1" path="res://Assets/audio/memes/CaChing.ogg" id="10_i8dh6"]
+[ext_resource type="AudioStream" uid="uid://bf21hc0x0ht4s" path="res://Assets/audio/memes/breakingBad.ogg" id="11_4g1vm"]
+
+[sub_resource type="GDScript" id="GDScript_s23y5"]
+script/source = "extends Node2D
+
+@onready var MikePriceText: RichTextLabel = $Prices/MikePrice
+@onready var SaulPriceText: RichTextLabel = $Prices/SaulPrice
+@onready var JessePriceText: RichTextLabel = $Prices/JessePrice
+@onready var GusPriceText: RichTextLabel = $Prices/GusPrice
+@onready var HectorPriceText: RichTextLabel = $Prices/HectorPrice
+@onready var TucoPriceText: RichTextLabel = $Prices/TucoPrice
+@onready var WalterPriceText: RichTextLabel = $Prices/WalterPrice
+@onready var youHave: RichTextLabel = $YouHave
+
+var prices: Dictionary
+@onready var jesseCook: AudioStreamPlayer = $JesseCook
+@onready var caChing: AudioStreamPlayer = $CaChing
+
+signal removeMe(node: String)
+
+var suffixes = {
+	1: \"k\",
+	2: \"M\",
+	3: \"B\",
+	4: \"T\",
+	5: \"Qa\",
+	6: \"Qi\",
+	7: \"Sx\",
+	8: \"Sp\",
+	9: \"Oc\",
+	10: \"No\",
+	11: \"De\",
+	12: \"Ude\",
+}
+
+func format_number(number: int) -> String:
+	if number < 1000:
+		return str(number)
+	var exponent = int(floor(log(number) / log(10) / 3))
+	var base_value = number / pow(1000, exponent)
+	var formatted_value = round(base_value * 10) / 10.0
+	if exponent <= 0 or exponent > suffixes.size():
+		return str(formatted_value)
+	return str(formatted_value) + suffixes[exponent]
+
+func get_random_number(min_value: int, max_value: int) -> int:
+	randomize()
+	return randi_range(min_value, max_value)
+
+func playSound() -> void:
+	var random = get_random_number(1, 10)
+	if random == 10:
+		var newAudioPlayer := jesseCook.duplicate()
+		get_tree().root.add_child(newAudioPlayer)
+		newAudioPlayer.play()
+		await newAudioPlayer.finished
+		newAudioPlayer.queue_free()
+	else:
+		var newAudioPlayer := caChing.duplicate()
+		get_tree().root.add_child(newAudioPlayer)
+		newAudioPlayer.play()
+		await newAudioPlayer.finished
+		newAudioPlayer.queue_free()
+
+func updatePrices() -> void:
+	prices = {
+		\"Mike\": (490000000 * (Generators.mikeGensBought + 1)),
+		\"Saul\": (1500000000 * (Generators.saulGensBought + 1)),
+		\"Jesse\": (4700000000 * (Generators.jesseGensBought + 1)),
+		\"Gus\": (13500000000 * (Generators.gusGensBought + 1)),
+		\"Hector\": (46000000000 * (Generators.hectorGensBought + 1)),
+		\"Tuco\": (180000000000 * (Generators.tucoGensBought + 1)),
+		\"Walter\": (450000000000 * (Generators.walterGensBought + 1))
+	}
+	MikePriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Mike\"]))
+	SaulPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Saul\"]))
+	JessePriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Jesse\"]))
+	GusPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Gus\"]))
+	HectorPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Hector\"]))
+	TucoPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Tuco\"]))
+	WalterPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Walter\"]))
+
+func _ready() -> void:
+	prices = {
+		\"Mike\": (490000000 * (Generators.mikeGensBought + 1)),
+		\"Saul\": (1500000000 * (Generators.saulGensBought + 1)),
+		\"Jesse\": (4700000000 * (Generators.jesseGensBought + 1)),
+		\"Gus\": (13500000000 * (Generators.gusGensBought + 1)),
+		\"Hector\": (46000000000 * (Generators.hectorGensBought + 1)),
+		\"Tuco\": (180000000000 * (Generators.tucoGensBought + 1)),
+		\"Walter\": (450000000000 * (Generators.walterGensBought + 1))
+	}
+	MikePriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Mike\"]))
+	SaulPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Saul\"]))
+	JessePriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Jesse\"]))
+	GusPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Gus\"]))
+	HectorPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Hector\"]))
+	TucoPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Tuco\"]))
+	WalterPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Walter\"]))
+
+func _on_mike_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Mike\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Mike\"]
+		Generators.mikeGensBought += 1
+		playSound()
+		updatePrices()
+
+func _on_saul_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Saul\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Saul\"]
+		Generators.saulGensBought += 1
+		playSound()
+		updatePrices()
+
+func _on_jesse_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Jesse\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Jesse\"]
+		Generators.jesseGensBought += 1
+		playSound()
+		updatePrices()
+
+func _on_gus_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Gus\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Gus\"]
+		Generators.gusGensBought += 1
+		playSound()
+		updatePrices()
+		
+func _on_hector_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Hector\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Hector\"]
+		Generators.hectorGensBought += 1
+		playSound()
+		updatePrices()
+
+func _on_tuco_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Tuco\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Tuco\"]
+		Generators.tucoGensBought += 1
+		playSound()
+		updatePrices()
+
+func _on_walter_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Walter\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Walter\"]
+		Generators.walterGensBought += 1
+		playSound()
+		updatePrices()
+
+func _process(delta: float) -> void:
+	youHave.text = \"You have: %s\" % format_number(SaveGame.data[\"clicks\"])
+
+func _on_touch_screen_button_pressed() -> void:
+	removeMe.emit(\"BreakingBad\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hno3x"]
+
+[node name="BreakingBad" type="Node2D"]
+script = SubResource("GDScript_s23y5")
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(1.07135, 1.0002)
+texture = ExtResource("1_b2o7j")
+centered = false
+
+[node name="Clickables" type="Node2D" parent="."]
+
+[node name="MikeGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(1.54972e-05, 0)
+scale = Vector2(0.305333, 0.226)
+texture_normal = ExtResource("2_5cvrr")
+
+[node name="SaulGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(1.52588e-05, 358)
+scale = Vector2(0.366987, 0.533333)
+texture_normal = ExtResource("3_wc8hc")
+
+[node name="JesseGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(1.5378e-05, 714)
+scale = Vector2(0.636111, 0.4625)
+texture_normal = ExtResource("4_cs4ns")
+
+[node name="GusGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(334, 0)
+scale = Vector2(0.636111, 0.467909)
+texture_normal = ExtResource("5_rcsex")
+
+[node name="HectorGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(334, 357)
+scale = Vector2(0.358372, 0.319602)
+texture_normal = ExtResource("6_ikvfk")
+
+[node name="TucoGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(334, 714)
+scale = Vector2(0.29359, 0.503417)
+texture_normal = ExtResource("7_5nq14")
+
+[node name="WalterGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(920, 314)
+scale = Vector2(1.44722, 0.829167)
+texture_normal = ExtResource("8_tpqfm")
+
+[node name="Prices" type="Node2D" parent="."]
+
+[node name="MikePrice" type="RichTextLabel" parent="Prices"]
+offset_top = 226.0
+offset_right = 540.0
+offset_bottom = 537.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "Cost: 123.23k"
+
+[node name="SaulPrice" type="RichTextLabel" parent="Prices"]
+offset_top = 582.0
+offset_right = 540.0
+offset_bottom = 893.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "Cost: 123.23k"
+
+[node name="JessePrice" type="RichTextLabel" parent="Prices"]
+offset_top = 936.0
+offset_right = 540.0
+offset_bottom = 1247.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "Cost: 123.23k"
+
+[node name="GusPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 334.0
+offset_top = 226.0
+offset_right = 874.0
+offset_bottom = 537.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "Cost: 123.23k"
+
+[node name="HectorPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 334.0
+offset_top = 582.0
+offset_right = 874.0
+offset_bottom = 893.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "Cost: 123.23k"
+
+[node name="TucoPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 334.0
+offset_top = 935.0
+offset_right = 874.0
+offset_bottom = 1246.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "Cost: 123.23k"
+
+[node name="WalterPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 920.0
+offset_top = 712.0
+offset_right = 2150.0
+offset_bottom = 1120.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 200
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "Cost: 123.23k"
+
+[node name="CaChing" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_i8dh6")
+volume_db = 24.0
+
+[node name="JesseCook" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_4g1vm")
+volume_db = 15.248
+
+[node name="Return" type="Node2D" parent="."]
+position = Vector2(1474, 900)
+scale = Vector2(2.76, 2.76)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Return"]
+offset_left = 37.0
+offset_top = -314.0
+offset_right = 478.0
+offset_bottom = -114.0
+scale = Vector2(0.26087, 0.26087)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 119
+text = "Return"
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Return"]
+position = Vector2(84.3623, -298.667)
+scale = Vector2(5.68, 1.49002)
+shape = SubResource("RectangleShape2D_hno3x")
+
+[node name="YouHave" type="RichTextLabel" parent="."]
+offset_left = 746.0
+offset_top = -1.0
+offset_right = 2443.0
+offset_bottom = 209.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 200
+theme_override_styles/normal = ExtResource("9_51i6y")
+text = "You have: 234.23k"
+
+[connection signal="pressed" from="Clickables/MikeGen" to="." method="_on_mike_gen_pressed"]
+[connection signal="pressed" from="Clickables/SaulGen" to="." method="_on_saul_gen_pressed"]
+[connection signal="pressed" from="Clickables/JesseGen" to="." method="_on_jesse_gen_pressed"]
+[connection signal="pressed" from="Clickables/GusGen" to="." method="_on_gus_gen_pressed"]
+[connection signal="pressed" from="Clickables/HectorGen" to="." method="_on_hector_gen_pressed"]
+[connection signal="pressed" from="Clickables/TucoGen" to="." method="_on_tuco_gen_pressed"]
+[connection signal="pressed" from="Clickables/WalterGen" to="." method="_on_walter_gen_pressed"]
+[connection signal="pressed" from="Return/TouchScreenButton" to="." method="_on_touch_screen_button_pressed"]

@@ -1,0 +1,60 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Sus clicker"
+run/main_scene="res://scenes/load_game.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+boot_splash/image="res://Assets/the lads.png"
+config/icon="res://Assets/clicker/clicker.png"
+
+[autoload]
+
+MusicPlayer="*res://scripts/MusicPlayer.gd"
+SaveGame="*res://scripts/SaveGame.gd"
+Leaderboards="*res://addons/quiver_leaderboards/leaderboards.tscn"
+PlayerAccounts="*res://addons/quiver_player_accounts/player_accounts.tscn"
+Generators="*res://scripts/Generators.gd"
+MusicDownloader="*res://scripts/MusicDownloader.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/quiver_leaderboards/plugin.cfg", "res://addons/quiver_player_accounts/plugin.cfg")
+
+[gui]
+
+theme/custom_font="res://Assets/Helvetica.ttf"
+
+[input]
+
+egg={
+"deadzone": 0.5,
+"events": []
+}
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[quiver]
+
+general/auth_token="7cLx8VWsTohLcHqeAykN9oT9fuWbF1iEPKHAkf4I"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+textures/vram_compression/import_etc2_astc=true

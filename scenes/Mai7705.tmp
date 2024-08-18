@@ -1,0 +1,368 @@
+[gd_scene load_steps=10 format=3 uid="uid://cw722klijuedw"]
+
+[ext_resource type="Texture2D" uid="uid://cugr2jifednrs" path="res://Assets/background/background.png" id="1_0nvv6"]
+[ext_resource type="Texture2D" uid="uid://sld886aaw4gb" path="res://Assets/clicker/clicker.png" id="2_i3wki"]
+[ext_resource type="Texture2D" uid="uid://dxsjmsw0urnho" path="res://Assets/clicker/pres logo.png" id="3_xtf8u"]
+[ext_resource type="Texture2D" uid="uid://cem5vmr0p3ojo" path="res://Assets/shops/tesco.jpg" id="4_5k6fv"]
+[ext_resource type="Texture2D" uid="uid://dfyfeit6jv6lq" path="res://Assets/clicker/setting.png" id="5_a3sw2"]
+[ext_resource type="Texture2D" uid="uid://cxbieatjwdx01" path="res://Assets/clicker/Leaderboard.png" id="6_rxwqq"]
+[ext_resource type="Texture2D" uid="uid://bnvy6xdv36qxl" path="res://Assets/clicker/Krabs.png" id="7_vtkno"]
+
+[sub_resource type="GDScript" id="GDScript_l3s54"]
+script/source = "extends Node2D
+
+var fixedTimeStep: float = 1.0/60.0
+const CPSLIMIT: int = 15
+var cps: int = 0
+var cpsTimer: float = 0
+var clickerOtherPos: Array[Vector2] = [
+	Vector2(1018,106),
+	Vector2(756,618),
+	Vector2(1284,746),
+	Vector2(664,830),
+	Vector2(204,630)
+]
+
+@onready var scenes: Dictionary = {
+	\"Settings\" : preload(\"res://scenes/settings.tscn\"),
+	\"Leaderboard\" : preload(\"res://scenes/leader_board.tscn\"),
+	\"Shop\" : preload(\"res://scenes/shop_entrence.tscn\"),
+	\"Ads\" : preload(\"res://scenes/ads.tscn\")
+}
+
+@onready var clicksText: RichTextLabel = $Background/Clicks
+@onready var mutliplierText: RichTextLabel = $Background/Mutliplier
+@onready var presCostText: RichTextLabel = $clicker/Prices/PresCost
+@onready var clickerEarn: TouchScreenButton = $clicker/Clickables/Earn
+@onready var offlinePR: Node2D = $OfflinePR
+@onready var amountEarntText: RichTextLabel = $OfflinePR/AmountEarnt
+
+var timeGone: int
+var inSubScene: bool = false
+var realRealAmount: float
+
+var shopNode: Node2D
+var leaderboardNode: Node2D
+var settingsNode: Node2D
+var adsNode: Node2D
+
+func removeScene(type: String) -> void:
+	var scenesToRemove: Dictionary = {
+		\"Settings\" : settingsNode,
+		\"Leaderboard\" : leaderboardNode,
+		\"Shop\" : shopNode,
+		\"Ads\" : adsNode
+	}
+	
+	if type == \"Ads\":
+		if \"musicChosen\" in SaveGame.data:
+			MusicPlayer.setMusic(int(SaveGame.data[\"musicChosen\"]))
+		else:
+			MusicPlayer.setMusic(0)
+			
+	remove_child(scenesToRemove[type])
+	await get_tree().create_timer(.1).timeout
+	inSubScene = false
+
+func get_random_number(min_value: int, max_value: int) -> int:
+	randomize()
+	return randi_range(min_value, max_value)
+
+var suffixes = {
+	1: \"k\",
+	2: \"M\",
+	3: \"B\",
+	4: \"T\",
+	5: \"Qa\",
+	6: \"Qi\",
+	7: \"Sx\"
+}
+
+func format_number(number: int) -> String:
+	if number < 1000:
+		return str(number)
+	var exponent = int(floor(log(number) / log(10) / 3))
+	var base_value = number / pow(1000, exponent)
+	var formatted_value = round(base_value * 10) / 10.0
+	if exponent <= 0 or exponent > suffixes.size():
+		return str(formatted_value)
+	return str(formatted_value) + suffixes[exponent]
+
+
+func _process(delta: float) -> void:
+	clicksText.text = \"Clicks: %s\" % format_number(SaveGame.data[\"clicks\"])
+	cpsTimer += delta
+	if cpsTimer >= 1:
+		cpsTimer = 0
+		cps = 0
+
+func rewardPlayer() -> void:
+	offlinePR.visible=true
+	Generators.calcOfflineEarnings()
+	var amountEarnt = Generators.offlineEarnings
+	print(\"Amount got:\", amountEarnt)
+	var realAmount = amountEarnt * timeGone
+	realRealAmount = realAmount / 10
+	amountEarntText.text = \"While you were gone for %s seconds, you earnt a grand total of:\\n\\n[center]%s clicks[/center]\" % [timeGone, realRealAmount]
+
+func _ready():
+	var currentTime = floor(Time.get_unix_time_from_system())
+	var lastPlayTime = floor(SaveGame.data[\"lastPlayTime\"])
+	timeGone = currentTime -  lastPlayTime
+	if timeGone > 7200:
+		rewardPlayer()
+	var clicks = int(SaveGame.data[\"clicks\"])
+	var multiplier = float(SaveGame.data[\"multiplier\"])
+	var multiplierCost = float(SaveGame.data[\"multiplierCost\"])
+	clicksText.text = \"Clicks: %s\" % format_number(clicks)
+	mutliplierText.text = \"Multiplier: %sx\" % multiplier
+	presCostText.text = \"Prestige cost: %s\" % format_number(multiplierCost)
+	
+	if \"volume\" in SaveGame.data:
+		var vol: String = str(SaveGame.data[\"volume\"])
+		AudioServer.set_bus_volume_db(AudioServer.get_bus_index(\"Master\"), int(vol)) 
+	if \"musicChosen\" in SaveGame.data:
+		var music: String = str(SaveGame.data[\"musicChosen\"])
+		MusicPlayer.setMusic(int(music))
+	else:
+		MusicPlayer.setMusic(0)
+
+func showCPSWarning() -> void:
+	clickerEarn.position = clickerOtherPos[get_random_number(0,3)]
+
+func _on_earn_pressed() -> void:
+	if not inSubScene:
+		cps += 1
+		SaveGame.data[\"clicks\"] += 1 * SaveGame.data[\"multiplier\"]
+		
+		if cps >= 15:
+			showCPSWarning()
+
+func _on_settings_pressed() -> void:
+	if not inSubScene:
+		settingsNode = scenes[\"Settings\"].instantiate()
+		add_child(settingsNode)
+		settingsNode.removeMe.connect(removeScene)
+		inSubScene = true
+	
+func _on_prestige_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= SaveGame.data[\"multiplierCost\"] and not inSubScene:
+		SaveGame.prestigeWipe()
+		mutliplierText.text = \"Multiplier: %sx\" % str(SaveGame.data[\"multiplier\"])
+		presCostText.text = \"Prestige cost: %s\" % format_number(SaveGame.data[\"multiplierCost\"])
+
+func _on_leaderboard_pressed() -> void:
+	if not inSubScene:
+		leaderboardNode = scenes[\"Leaderboard\"].instantiate()
+		add_child(leaderboardNode)
+		leaderboardNode.removeMe.connect(removeScene)
+		inSubScene = true
+	
+func _on_shop_pressed() -> void:
+	if not inSubScene:
+		shopNode = scenes[\"Shop\"].instantiate()
+		add_child(shopNode)
+		shopNode.removeMe.connect(removeScene)
+		inSubScene = true
+
+func _on_ads_pressed() -> void:
+	if not inSubScene:
+		adsNode = scenes[\"Ads\"].instantiate()
+		add_child(adsNode)
+		adsNode.removeMe.connect(removeScene)
+		inSubScene = true
+
+func _on_no_pressed() -> void:
+	offlinePR.visible=false
+
+func _on_yes_pressed() -> void:
+	SaveGame.data[\"clicks\"] += realRealAmount
+	offlinePR.visible=false
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v4tk4"]
+
+[node name="MainGame" type="Node2D"]
+script = SubResource("GDScript_l3s54")
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Background1" type="TextureRect" parent="Background"]
+offset_right = 1922.0
+offset_bottom = 1081.0
+texture = ExtResource("1_0nvv6")
+
+[node name="Clicks" type="RichTextLabel" parent="Background"]
+offset_left = 3.0
+offset_top = 1002.0
+offset_right = 1931.0
+offset_bottom = 1126.0
+scale = Vector2(0.68, 0.68)
+theme_override_font_sizes/normal_font_size = 120
+text = "Clicks: "
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Mutliplier" type="RichTextLabel" parent="Background"]
+offset_top = 563.0
+offset_right = 1063.0
+offset_bottom = 706.0
+scale = Vector2(0.272754, 0.272754)
+theme_override_font_sizes/normal_font_size = 120
+text = "Multiplier: 1x"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="clicker" type="Node2D" parent="."]
+
+[node name="Clickables" type="Node2D" parent="clicker"]
+
+[node name="Earn" type="TouchScreenButton" parent="clicker/Clickables"]
+position = Vector2(204, 630)
+scale = Vector2(0.264591, 0.255837)
+texture_normal = ExtResource("2_i3wki")
+
+[node name="Prestige" type="TouchScreenButton" parent="clicker/Clickables"]
+position = Vector2(13, 106)
+scale = Vector2(0.904591, 0.87466)
+texture_normal = ExtResource("3_xtf8u")
+
+[node name="Shop" type="TouchScreenButton" parent="clicker/Clickables"]
+position = Vector2(1478, 417)
+scale = Vector2(0.184591, 0.178483)
+texture_normal = ExtResource("4_5k6fv")
+
+[node name="Settings" type="TouchScreenButton" parent="clicker/Clickables"]
+position = Vector2(1757, 30)
+scale = Vector2(0.304591, 0.294513)
+texture_normal = ExtResource("5_a3sw2")
+
+[node name="Leaderboard" type="TouchScreenButton" parent="clicker/Clickables"]
+position = Vector2(333, 11)
+scale = Vector2(0.264589, 0.255834)
+texture_normal = ExtResource("6_rxwqq")
+
+[node name="Ads" type="TouchScreenButton" parent="clicker/Clickables"]
+position = Vector2(1660, 821)
+scale = Vector2(0.388717, 0.375855)
+texture_normal = ExtResource("7_vtkno")
+
+[node name="Prices" type="Node2D" parent="clicker"]
+
+[node name="PresCost" type="RichTextLabel" parent="clicker/Prices"]
+offset_top = 451.0
+offset_right = 935.0
+offset_bottom = 821.0
+scale = Vector2(0.312329, 0.292156)
+theme_override_font_sizes/normal_font_size = 150
+text = "Prestige cost: 999.99B"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="EnterTesco" type="RichTextLabel" parent="clicker/Prices"]
+offset_left = 1476.0
+offset_top = 646.0
+offset_right = 2121.0
+offset_bottom = 771.0
+scale = Vector2(0.59233, 0.554072)
+theme_override_font_sizes/normal_font_size = 120
+bbcode_enabled = true
+text = "[center]Enter tesco[/center]"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="EnterAds" type="RichTextLabel" parent="clicker/Prices"]
+offset_left = 1523.0
+offset_top = 1006.0
+offset_right = 2370.0
+offset_bottom = 1173.0
+scale = Vector2(0.47234, 0.441832)
+theme_override_font_sizes/normal_font_size = 120
+bbcode_enabled = true
+text = "[center]Enter ads shop[/center]"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="OfflinePR" type="Node2D" parent="."]
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="OfflinePR"]
+offset_left = 437.0
+offset_top = 141.0
+offset_right = 1464.0
+offset_bottom = 939.0
+color = Color(1, 0.501961, 1, 1)
+
+[node name="AmountEarnt" type="RichTextLabel" parent="OfflinePR"]
+offset_left = 437.0
+offset_top = 310.0
+offset_right = 3719.0
+offset_bottom = 2080.0
+scale = Vector2(0.312329, 0.292156)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 320
+bbcode_enabled = true
+text = "While you were gone for [TimeGone], you earnt a grand total of:
+
+[center][AmountEarnt][/center]"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Info" type="RichTextLabel" parent="OfflinePR"]
+offset_left = 437.0
+offset_top = 141.0
+offset_right = 3725.0
+offset_bottom = 1233.0
+scale = Vector2(0.312329, 0.292156)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 470
+text = "Welcome back"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Yes" type="TouchScreenButton" parent="OfflinePR"]
+position = Vector2(626, 862)
+scale = Vector2(15.52, 5.64)
+shape = SubResource("RectangleShape2D_v4tk4")
+
+[node name="YesText" type="RichTextLabel" parent="OfflinePR"]
+offset_left = 471.0
+offset_top = 805.0
+offset_right = 1464.0
+offset_bottom = 1192.0
+scale = Vector2(0.312329, 0.292156)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 450
+bbcode_enabled = true
+text = "[center]Thx[/center]"
+fit_content = true
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="No" type="TouchScreenButton" parent="OfflinePR"]
+position = Vector2(1221, 862)
+scale = Vector2(15.52, 5.64)
+shape = SubResource("RectangleShape2D_v4tk4")
+
+[node name="NoText" type="RichTextLabel" parent="OfflinePR"]
+offset_left = 1066.0
+offset_top = 811.0
+offset_right = 2059.0
+offset_bottom = 1262.0
+scale = Vector2(0.312329, 0.292156)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 382
+bbcode_enabled = true
+text = "[center]No Ta[/center]"
+fit_content = true
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[connection signal="pressed" from="clicker/Clickables/Earn" to="." method="_on_earn_pressed"]
+[connection signal="pressed" from="clicker/Clickables/Prestige" to="." method="_on_prestige_pressed"]
+[connection signal="pressed" from="clicker/Clickables/Shop" to="." method="_on_shop_pressed"]
+[connection signal="pressed" from="clicker/Clickables/Settings" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="clicker/Clickables/Leaderboard" to="." method="_on_leaderboard_pressed"]
+[connection signal="pressed" from="clicker/Clickables/Ads" to="." method="_on_ads_pressed"]
+[connection signal="pressed" from="OfflinePR/Yes" to="." method="_on_yes_pressed"]
+[connection signal="pressed" from="OfflinePR/No" to="." method="_on_no_pressed"]
