@@ -129,26 +129,15 @@ func _on_confirm_code_pressed() -> void:
 		SaveGame.data[\"clicks\"] += 25000000000000
 	elif codeEnter.text == \"CottonEyeJoe\":
 		$AudioStreamPlayer.play()
+	elif codeEnter.text == \"IFix4CallumCuzHeNotGigaEnoughToGetHisPrestigesBack\":
+		SaveGame.data[\"prestiges\"] = 53
+		print(\"Gave prestiges\")
 
 const LIMIT: int = 15
 var current_text := ''
 
 func _on_code_enter_text_changed() -> void:
-	var new_text : String = codeEnter.text
-
-	
-	if new_text.length() > LIMIT:
-		codeEnter.text = current_text
-		codeEnter.set_caret_column(codeEnter.text.length())
-	
-	var withoutSpaces = codeEnter.text.replace(\"\\n\", \"\").replace(\"\\r\", \"\")
-	if withoutSpaces == codeEnter.text:
-		current_text = codeEnter.text
-	else:
-		codeEnter.text = withoutSpaces
-		current_text = codeEnter.text
-		codeEnter.set_caret_column(codeEnter.text.length())	
-
+	var current_text : String = codeEnter.text
 
 func _on_background_select_item_selected(index: int) -> void:
 	SaveGame.data[\"background\"] = index
@@ -186,7 +175,7 @@ func _on_confirm_song_released() -> void:
 script = SubResource("GDScript_wpue8")
 
 [node name="Background" type="Sprite2D" parent="."]
-scale = Vector2(1.50391, 1.50972)
+scale = Vector2(1.725, 1.50972)
 texture = ExtResource("1_t2g5n")
 centered = false
 
@@ -379,7 +368,7 @@ scale = Vector2(9.08, 2.05665)
 shape = SubResource("RectangleShape2D_hrftr")
 
 [node name="Return" type="Node2D" parent="."]
-position = Vector2(1500, 896)
+position = Vector2(1756, 896)
 scale = Vector2(2.76, 2.76)
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Return"]
@@ -416,6 +405,5 @@ volume_db = 6.9
 [connection signal="released" from="Music/PasteSong" to="Music" method="_on_paste_song_released"]
 [connection signal="item_selected" from="BackgroundChanger/BackgroundSelect" to="." method="_on_background_select_item_selected"]
 [connection signal="item_selected" from="ClickSounds/ClickSounds" to="." method="_on_click_sounds_item_selected"]
-[connection signal="text_changed" from="Codes/CodeEnter" to="." method="_on_code_enter_text_changed"]
 [connection signal="pressed" from="Codes/ConfirmCode" to="." method="_on_confirm_code_pressed"]
 [connection signal="pressed" from="Return/TouchScreenButton" to="." method="_on_touch_screen_button_pressed"]

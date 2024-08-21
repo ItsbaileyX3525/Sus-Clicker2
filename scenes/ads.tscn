@@ -62,7 +62,7 @@ _data = {
 script = SubResource("GDScript_7lpeg")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(8.72727, 6.58537)
+scale = Vector2(10.0045, 6.58537)
 texture = ExtResource("1_nfc68")
 centered = false
 hframes = 3
@@ -75,7 +75,7 @@ libraries = {
 autoplay = "rubBalls"
 
 [node name="Return" type="Node2D" parent="."]
-position = Vector2(1461, 893)
+position = Vector2(1779, 893)
 scale = Vector2(2.76, 2.76)
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Return"]

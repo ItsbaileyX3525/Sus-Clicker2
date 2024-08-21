@@ -140,14 +140,14 @@ corner_radius_bottom_left = 10
 script = SubResource("GDScript_721cg")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(1.88, 1.88)
+scale = Vector2(2.14844, 1.88)
 texture = ExtResource("1_eoqea")
 centered = false
 
 [node name="Upload" type="RichTextLabel" parent="."]
-offset_left = 1313.0
+offset_left = 1523.0
 offset_top = 219.0
-offset_right = 1639.0
+offset_right = 1849.0
 offset_bottom = 260.0
 scale = Vector2(1.50431, 1.50431)
 theme_override_font_sizes/normal_font_size = 39
@@ -155,22 +155,22 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_x7quy")
 text = "Update your score"
 
 [node name="UpdateScore" type="TouchScreenButton" parent="."]
-position = Vector2(1557, 248)
+position = Vector2(1767, 248)
 scale = Vector2(23.96, 2.85353)
 shape = SubResource("RectangleShape2D_vtlju")
 
 [node name="Username" type="TextEdit" parent="."]
-offset_left = 1334.0
+offset_left = 1544.0
 offset_top = 314.0
-offset_right = 1778.0
+offset_right = 1988.0
 offset_bottom = 386.0
 theme_override_font_sizes/font_size = 50
 placeholder_text = "Username..."
 
 [node name="Response" type="RichTextLabel" parent="."]
-offset_left = 1307.0
+offset_left = 1517.0
 offset_top = 671.0
-offset_right = 1671.0
+offset_right = 1881.0
 offset_bottom = 793.0
 scale = Vector2(1.50431, 1.50431)
 theme_override_font_sizes/normal_font_size = 39
@@ -187,7 +187,7 @@ volume_db = 24.0
 [node name="Leaderboard" type="RichTextLabel" parent="."]
 offset_left = -1.0
 offset_top = 3.0
-offset_right = 1368.0
+offset_right = 1636.0
 offset_bottom = 2811.0
 scale = Vector2(0.384311, 0.384311)
 theme_override_font_sizes/normal_font_size = 120
@@ -197,9 +197,9 @@ Fun fact:
 Sloths can't fart"
 
 [node name="Update" type="RichTextLabel" parent="."]
-offset_left = 1306.0
+offset_left = 1516.0
 offset_top = 495.0
-offset_right = 1661.0
+offset_right = 1871.0
 offset_bottom = 536.0
 scale = Vector2(1.50431, 1.50431)
 theme_override_font_sizes/normal_font_size = 39
@@ -207,12 +207,12 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_x7quy")
 text = "Update leaderboard"
 
 [node name="UpdateLeaderboard" type="TouchScreenButton" parent="."]
-position = Vector2(1573, 524)
+position = Vector2(1783, 524)
 scale = Vector2(26.64, 3.13353)
 shape = SubResource("RectangleShape2D_vtlju")
 
 [node name="Return" type="Node2D" parent="."]
-position = Vector2(1474, 900)
+position = Vector2(1782, 900)
 scale = Vector2(2.76, 2.76)
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Return"]

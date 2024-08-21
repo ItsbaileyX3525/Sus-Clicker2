@@ -81,20 +81,20 @@ script = SubResource("GDScript_vkr0j")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 0
-offset_right = 1920.0
+offset_right = 2200.0
 offset_bottom = 1080.0
 color = Color(0, 0, 0, 1)
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
 layout_mode = 0
-offset_left = 249.0
+offset_left = 375.0
 offset_top = 596.0
-offset_right = 1665.0
+offset_right = 1791.0
 offset_bottom = 722.0
 step = 0.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(959, 339)
+position = Vector2(1086, 339)
 texture = ExtResource("1_a44jo")
 hframes = 14
 vframes = 13
@@ -108,7 +108,7 @@ speed_scale = 1.25
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 0
-offset_right = 1921.0
+offset_right = 2201.0
 offset_bottom = 1731.0
 theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)

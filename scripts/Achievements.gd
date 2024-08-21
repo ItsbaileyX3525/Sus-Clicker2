@@ -113,10 +113,10 @@ var defaultSave: Array = [
 ]
 
 var defaultTrackedVariables: Dictionary = {
-	"totalClicks" : 0,
-	"totalPlaytime" : 0,
-	"totalSpent" : 0,
-	"callumsBought" : 0,
+	"totalClicks": 0,
+	"totalPlaytime": 0,
+	"totalSpent": 0,
+	"callumsBought": 0,
 	"nathanielsBought": 0,
 	"taylorsBought": 0,
 	"wilsonsBought": 0,

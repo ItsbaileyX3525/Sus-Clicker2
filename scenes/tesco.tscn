@@ -186,7 +186,7 @@ func _on_touch_screen_button_pressed() -> void:
 script = SubResource("GDScript_s23y5")
 
 [node name="Background" type="Sprite2D" parent="."]
-scale = Vector2(4, 3.375)
+scale = Vector2(4.58333, 3.375)
 texture = ExtResource("1_qivt3")
 centered = false
 
@@ -208,22 +208,22 @@ scale = Vector2(0.0762032, 0.0555)
 texture_normal = ExtResource("4_dttdd")
 
 [node name="WilsonGen" type="TouchScreenButton" parent="Clickables"]
-position = Vector2(334, 4)
+position = Vector2(402, 4)
 scale = Vector2(0.190833, 0.13875)
 texture_normal = ExtResource("5_rl81q")
 
 [node name="GreenGen" type="TouchScreenButton" parent="Clickables"]
-position = Vector2(334, 360)
+position = Vector2(402, 360)
 scale = Vector2(1.52667, 1.12121)
 texture_normal = ExtResource("6_8t0vp")
 
 [node name="RedGen" type="TouchScreenButton" parent="Clickables"]
-position = Vector2(334, 716)
+position = Vector2(402, 716)
 scale = Vector2(0.317614, 0.24052)
 texture_normal = ExtResource("7_cy204")
 
 [node name="JermaGen" type="TouchScreenButton" parent="Clickables"]
-position = Vector2(920, 314)
+position = Vector2(1022, 314)
 scale = Vector2(0.406836, 0.55315)
 texture_normal = ExtResource("8_gqm6a")
 
@@ -257,9 +257,9 @@ theme_override_styles/normal = ExtResource("3_i3k4v")
 text = "Cost: 123.23k"
 
 [node name="WilsonPrice" type="RichTextLabel" parent="Prices"]
-offset_left = 334.0
+offset_left = 402.0
 offset_top = 226.0
-offset_right = 874.0
+offset_right = 942.0
 offset_bottom = 537.0
 scale = Vector2(0.42431, 0.42431)
 theme_override_font_sizes/normal_font_size = 150
@@ -267,9 +267,9 @@ theme_override_styles/normal = ExtResource("3_i3k4v")
 text = "Cost: 123.23k"
 
 [node name="GreenPrice" type="RichTextLabel" parent="Prices"]
-offset_left = 334.0
+offset_left = 402.0
 offset_top = 582.0
-offset_right = 874.0
+offset_right = 942.0
 offset_bottom = 893.0
 scale = Vector2(0.42431, 0.42431)
 theme_override_font_sizes/normal_font_size = 150
@@ -277,9 +277,9 @@ theme_override_styles/normal = ExtResource("3_i3k4v")
 text = "Cost: 123.23k"
 
 [node name="RedPrice" type="RichTextLabel" parent="Prices"]
-offset_left = 334.0
+offset_left = 402.0
 offset_top = 935.0
-offset_right = 874.0
+offset_right = 942.0
 offset_bottom = 1246.0
 scale = Vector2(0.42431, 0.42431)
 theme_override_font_sizes/normal_font_size = 150
@@ -287,9 +287,9 @@ theme_override_styles/normal = ExtResource("3_i3k4v")
 text = "Cost: 123.23k"
 
 [node name="JermaPrice" type="RichTextLabel" parent="Prices"]
-offset_left = 920.0
+offset_left = 1022.0
 offset_top = 712.0
-offset_right = 2150.0
+offset_right = 2252.0
 offset_bottom = 1122.0
 scale = Vector2(0.42431, 0.42431)
 theme_override_font_sizes/normal_font_size = 200
@@ -304,7 +304,7 @@ volume_db = 24.0
 stream = ExtResource("7_afeim")
 
 [node name="Return" type="Node2D" parent="."]
-position = Vector2(1474, 900)
+position = Vector2(1758, 900)
 scale = Vector2(2.76, 2.76)
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Return"]
@@ -323,9 +323,9 @@ scale = Vector2(5.68, 1.49002)
 shape = SubResource("RectangleShape2D_hno3x")
 
 [node name="YouHave" type="RichTextLabel" parent="."]
-offset_left = 746.0
+offset_left = 879.0
 offset_top = -1.0
-offset_right = 2443.0
+offset_right = 2576.0
 offset_bottom = 209.0
 scale = Vector2(0.42431, 0.42431)
 theme_override_font_sizes/normal_font_size = 200

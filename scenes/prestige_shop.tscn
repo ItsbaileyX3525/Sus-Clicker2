@@ -21,19 +21,19 @@ script = SubResource("GDScript_frjnl")
 [node name="TopBar" type="Node2D" parent="."]
 
 [node name="Main" type="ColorRect" parent="TopBar"]
-offset_right = 1920.0
+offset_right = 2200.0
 offset_bottom = 118.0
 color = Color(0.901961, 0.909804, 0.921569, 1)
 
 [node name="Under" type="ColorRect" parent="TopBar"]
 offset_top = 105.0
-offset_right = 1920.0
+offset_right = 2200.0
 offset_bottom = 118.0
 color = Color(0.694118, 0.698039, 0.709804, 1)
 
 [node name="Title" type="RichTextLabel" parent="TopBar"]
 offset_top = 11.0
-offset_right = 2824.0
+offset_right = 3235.0
 offset_bottom = 136.0
 scale = Vector2(0.68, 0.68)
 theme_override_colors/default_color = Color(0, 0, 0, 1)
@@ -62,7 +62,7 @@ shape = SubResource("RectangleShape2D_sobv1")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 offset_top = 118.0
-offset_right = 1920.0
+offset_right = 2200.0
 offset_bottom = 1080.0
 texture = ExtResource("1_kj6kj")
 

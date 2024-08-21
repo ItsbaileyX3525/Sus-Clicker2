@@ -92,7 +92,7 @@ script = SubResource("GDScript_n0nsm")
 
 [node name="Background" type="Sprite2D" parent="."]
 modulate = Color(0.544974, 0.544974, 0.544974, 1)
-scale = Vector2(5, 4.5)
+scale = Vector2(5.72917, 4.5)
 texture = ExtResource("1_xh6qa")
 centered = false
 
@@ -112,7 +112,7 @@ scale = Vector2(0.715687, 0.4027)
 texture_normal = ExtResource("3_sy4ny")
 
 [node name="EnterBreakingBad" type="TouchScreenButton" parent="Clickables"]
-self_modulate = Color(1, 1, 1, 0.572549)
+modulate = Color(1, 1, 1, 0.568627)
 position = Vector2(591.875, 121.25)
 scale = Vector2(0.240104, 0.09375)
 texture_normal = ExtResource("4_wtl8n")
@@ -165,7 +165,7 @@ theme_override_font_sizes/normal_font_size = 210
 text = "*10 prestiges to enter"
 
 [node name="Return" type="Node2D" parent="."]
-position = Vector2(1474, 900)
+position = Vector2(1770, 900)
 scale = Vector2(2.76, 2.76)
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Return"]

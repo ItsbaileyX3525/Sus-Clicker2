@@ -1,12 +1,6 @@
-[gd_scene load_steps=46 format=3 uid="uid://c88bviepv71c1"]
+[gd_scene load_steps=37 format=3 uid="uid://c88bviepv71c1"]
 
-[ext_resource type="Texture2D" uid="uid://3lhd76vh76rb" path="res://Assets/background/susDance.jpg" id="1_a44ba"]
-[ext_resource type="Texture2D" uid="uid://cugr2jifednrs" path="res://Assets/background/background.png" id="2_xodvd"]
-[ext_resource type="Texture2D" uid="uid://c7i0ytll2v1r" path="res://Assets/background/mainBackgrounds/Backrooms.webp" id="3_qmkdo"]
-[ext_resource type="Texture2D" uid="uid://lsfuynwuelsi" path="res://Assets/background/mainBackgrounds/Minecraft.webp" id="4_3l375"]
-[ext_resource type="Texture2D" uid="uid://df0aq068n1bnv" path="res://Assets/background/mainBackgrounds/Fortnite.webp" id="5_8ete2"]
 [ext_resource type="Texture2D" uid="uid://6kevwt208fju" path="res://Assets/background/mainBackgrounds/dhar man.webp" id="6_se3hn"]
-[ext_resource type="Texture2D" uid="uid://e3pgin6b3t46" path="res://Assets/background/mainBackgrounds/NickCageSun.webp" id="7_dpscv"]
 [ext_resource type="Texture2D" uid="uid://ddmipfmienqbg" path="res://Assets/achievements/Cursor.webp" id="8_81mfp"]
 [ext_resource type="Texture2D" uid="uid://sld886aaw4gb" path="res://Assets/clicker/clicker.png" id="8_hkrls"]
 [ext_resource type="Texture2D" uid="uid://mgcf8xdmhhb3" path="res://Assets/achievements/clock.png" id="8_iolte"]
@@ -113,44 +107,6 @@ func _ready() -> void:
 	progress_top.text = \"[center]\\n%s%%[/center]\" % percentageProgress
 "
 
-[sub_resource type="Animation" id="Animation_uoj57"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
-[sub_resource type="Animation" id="Animation_jc11t"]
-resource_name = "playBitch"
-length = 8.3
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8, 8.1, 8.2, 8.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_x7fvx"]
-_data = {
-"RESET": SubResource("Animation_uoj57"),
-"playBitch": SubResource("Animation_jc11t")
-}
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_om1kv"]
 
 [sub_resource type="Resource" id="Resource_lgu6i"]
@@ -248,76 +204,30 @@ script = SubResource("GDScript_23gu8")
 
 [node name="Background2" type="Node2D" parent="."]
 modulate = Color(0.344076, 0.344076, 0.344076, 1)
-
-[node name="Amogus" type="Sprite2D" parent="Background2"]
-visible = false
-modulate = Color(0.868985, 0.868985, 0.868985, 1)
-position = Vector2(960, 540)
-scale = Vector2(3, 3.29268)
-texture = ExtResource("1_a44ba")
-hframes = 7
-vframes = 12
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Background2/Amogus"]
-libraries = {
-"": SubResource("AnimationLibrary_x7fvx")
-}
-autoplay = "playBitch"
-speed_scale = 1.3
-
-[node name="Heyy" type="TextureRect" parent="Background2"]
-visible = false
-offset_right = 1922.0
-offset_bottom = 1081.0
-texture = ExtResource("2_xodvd")
-
-[node name="Backroom" type="TextureRect" parent="Background2"]
-visible = false
-offset_right = 1922.0
-offset_bottom = 1081.0
-texture = ExtResource("3_qmkdo")
-
-[node name="Meincampf" type="TextureRect" parent="Background2"]
-visible = false
-offset_right = 1922.0
-offset_bottom = 1081.0
-texture = ExtResource("4_3l375")
-
-[node name="Fortnite" type="TextureRect" parent="Background2"]
-visible = false
-offset_right = 1922.0
-offset_bottom = 1081.0
-texture = ExtResource("5_8ete2")
+scale = Vector2(1.16, 1)
 
 [node name="DharMan" type="TextureRect" parent="Background2"]
-offset_right = 1922.0
+offset_right = 1899.0
 offset_bottom = 1082.0
 texture = ExtResource("6_se3hn")
-expand_mode = 1
-
-[node name="NickCage" type="TextureRect" parent="Background2"]
-visible = false
-offset_right = 1922.0
-offset_bottom = 1082.0
-texture = ExtResource("7_dpscv")
 expand_mode = 1
 
 [node name="TopBar" type="Node2D" parent="."]
 
 [node name="Main" type="ColorRect" parent="TopBar"]
-offset_right = 1920.0
+offset_right = 2200.0
 offset_bottom = 118.0
 color = Color(0.901961, 0.909804, 0.921569, 1)
 
 [node name="Under" type="ColorRect" parent="TopBar"]
 offset_top = 105.0
-offset_right = 1920.0
+offset_right = 2200.0
 offset_bottom = 118.0
 color = Color(0.694118, 0.698039, 0.709804, 1)
 
 [node name="Title" type="RichTextLabel" parent="TopBar"]
 offset_top = 11.0
-offset_right = 2824.0
+offset_right = 3235.0
 offset_bottom = 136.0
 scale = Vector2(0.68, 0.68)
 theme_override_colors/default_color = Color(0, 0, 0, 1)
@@ -329,7 +239,7 @@ drag_and_drop_selection_enabled = false
 
 [node name="ReturnText" type="RichTextLabel" parent="TopBar"]
 offset_top = 24.0
-offset_right = 2824.0
+offset_right = 2831.0
 offset_bottom = 149.0
 scale = Vector2(0.505862, 0.505862)
 theme_override_colors/default_color = Color(0, 0, 0, 1)
@@ -510,6 +420,7 @@ texture = ExtResource("8_iolte")
 expand_mode = 1
 
 [node name="Achievements" type="Node2D" parent="."]
+position = Vector2(102, 0)
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Achievements"]
 custom_minimum_size = Vector2(1350, 900)

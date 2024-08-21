@@ -8,6 +8,9 @@ var defaultSave: Dictionary = {
 	"clicks" : 0,
 	"multiplier" : 1,
 	"prestiges" : 0,
+	"musicChosen" : 0,
+	"clickSound" : 0,
+	"volume" : 0,
 	"multiplierCost" : 25000,
 	"callumGensBought" : 0,
 	"nathanielGensBought" : 0,
@@ -51,7 +54,19 @@ func loadGame() -> Dictionary:
 	
 var data := loadGame()
 
+#Just in case variables are missing from previous versions
 func _ready() -> void:
+	if not "musicChosen" in data:
+		data["musicChosen"] = 0
+	if not "prestiges" in data:
+		data["prestiges"] = 0
+	if not "volume" in data:
+		data["volume"] = 0
+	if not "clickSound" in data:
+		data["clickSound"] = 0
+	if not "background" in data:
+		data["background"] = 0
+
 	pass#justLikeFullyWipeEverythingHeldInData()
 
 func justLikeFullyWipeEverythingHeldInData() -> void:
@@ -105,8 +120,7 @@ func prestigeWipe() -> void:
 	data["prestiges"] = oldPrestiges
 	data["catergoryMusic"] = categoryMusic
 	allowSaves = true
-	
-	
+
 func _process(delta: float) -> void:
 	timer+=delta
 	if timer >= 1 and allowSaves:
