@@ -1,0 +1,342 @@
+[gd_scene load_steps=14 format=3 uid="uid://d1odv80xr7vig"]
+
+[ext_resource type="Texture2D" uid="uid://c5k53h8hcnvkm" path="res://Assets/background/ShopBG.jpg" id="1_qivt3"]
+[ext_resource type="Texture2D" uid="uid://bh7f3x7rprhnd" path="res://Assets/clicker/Generators/Tesco/Callum.png" id="2_4d6h1"]
+[ext_resource type="Texture2D" uid="uid://dom11gedum04l" path="res://Assets/clicker/Generators/Tesco/NathanielGen.jpg" id="3_0bgg6"]
+[ext_resource type="StyleBox" uid="uid://bw8rbeeeexnuf" path="res://styles/genPrice.tres" id="3_i3k4v"]
+[ext_resource type="Texture2D" uid="uid://ciyy8ta7kg61y" path="res://Assets/clicker/Generators/Tesco/TaylorGen.jpg" id="4_dttdd"]
+[ext_resource type="Texture2D" uid="uid://drbfitl77eqg" path="res://Assets/clicker/Generators/Tesco/wilson.jpg" id="5_rl81q"]
+[ext_resource type="Texture2D" uid="uid://0ryx6w3jhx4i" path="res://Assets/clicker/Generators/Tesco/Green.png" id="6_8t0vp"]
+[ext_resource type="AudioStream" uid="uid://dmwoxogrd6rp1" path="res://Assets/audio/memes/CaChing.ogg" id="6_c7td8"]
+[ext_resource type="AudioStream" uid="uid://cf2bn7ax2h6xj" path="res://Assets/audio/memes/sus.ogg" id="7_afeim"]
+[ext_resource type="Texture2D" uid="uid://sld886aaw4gb" path="res://Assets/clicker/clicker.png" id="7_cy204"]
+[ext_resource type="Texture2D" uid="uid://cimyot3kcqtva" path="res://Assets/clicker/Generators/Tesco/Jerma.jpg" id="8_gqm6a"]
+
+[sub_resource type="GDScript" id="GDScript_s23y5"]
+script/source = "extends Node2D
+
+@onready var callumPriceText: RichTextLabel = $Prices/CallumPrice
+@onready var nathanielPriceText: RichTextLabel = $Prices/NathanielPrice
+@onready var taylorPriceText: RichTextLabel = $Prices/TaylorPrice
+@onready var wilsonPriceText: RichTextLabel = $Prices/WilsonPrice
+@onready var greenPriceText: RichTextLabel = $Prices/GreenPrice
+@onready var redPriceText: RichTextLabel = $Prices/RedPrice
+@onready var jermaPriceText: RichTextLabel = $Prices/JermaPrice
+@onready var youHave: RichTextLabel = $YouHave
+
+var prices: Dictionary
+@onready var sus: AudioStreamPlayer = $Sus
+@onready var caChing: AudioStreamPlayer = $CaChing
+
+signal removeMe(node: String)
+
+var suffixes = {
+	1: \"k\",
+	2: \"M\",
+	3: \"B\",
+	4: \"T\",
+	5: \"Qa\",
+	6: \"Qi\",
+	7: \"Sx\",
+	8: \"Sp\",
+	9: \"Oc\",
+	10: \"No\",
+	11: \"De\",
+	12: \"Ude\",
+}
+
+func format_number(number: int) -> String:
+	if number < 1000:
+		return str(number)
+	var exponent = int(floor(log(number) / log(10) / 3))
+	var base_value = number / pow(1000, exponent)
+	var formatted_value = round(base_value * 10) / 10.0
+	if exponent <= 0 or exponent > suffixes.size():
+		return str(formatted_value)
+	return str(formatted_value) + suffixes[exponent]
+
+func get_random_number(min_value: int, max_value: int) -> int:
+	randomize()
+	return randi_range(min_value, max_value)
+
+func playSound() -> void:
+	var random = get_random_number(1, 10)
+	if random == 10:
+		var newAudioPlayer := sus.duplicate()
+		get_tree().root.add_child(newAudioPlayer)
+		newAudioPlayer.play()
+		await newAudioPlayer.finished
+		newAudioPlayer.queue_free()
+	else:
+		var newAudioPlayer := caChing.duplicate()
+		get_tree().root.add_child(newAudioPlayer)
+		newAudioPlayer.play()
+		await newAudioPlayer.finished
+		newAudioPlayer.queue_free()
+
+func updatePrices() -> void:
+	prices = {
+		\"Callum\": (100 * (Generators.callumGensBought + 1)),
+		\"Nathaniel\": (350 * (Generators.nathanielGensBought + 1)),
+		\"Taylor\": (1100 * (Generators.taylorGensBought + 1)),
+		\"Wilson\": (3200 * (Generators.wilsonGensBought + 1)),
+		\"Green\": (8600 * (Generators.greenGensBought + 1)),
+		\"Red\": (25000 * (Generators.redGensBought + 1)),
+		\"Jerma\": (75000 * (Generators.jermaGensBought + 1))
+	}
+	callumPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Callum\"]))
+	nathanielPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Nathaniel\"]))
+	taylorPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Taylor\"]))
+	wilsonPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Wilson\"]))
+	greenPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Green\"]))
+	redPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Red\"]))
+	jermaPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Jerma\"]))
+
+func _ready() -> void:
+	prices = {
+		\"Callum\": (100 * (Generators.callumGensBought + 1)),
+		\"Nathaniel\": (350 * (Generators.nathanielGensBought + 1)),
+		\"Taylor\": (1100 * (Generators.taylorGensBought + 1)),
+		\"Wilson\": (3200 * (Generators.wilsonGensBought + 1)),
+		\"Green\": (8600 * (Generators.greenGensBought + 1)),
+		\"Red\": (25000 * (Generators.redGensBought + 1)),
+		\"Jerma\": (75000 * (Generators.jermaGensBought + 1))
+	}
+	callumPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Callum\"]))
+	nathanielPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Nathaniel\"]))
+	taylorPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Taylor\"]))
+	wilsonPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Wilson\"]))
+	greenPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Green\"]))
+	redPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Red\"]))
+	jermaPriceText.text = \"Cost: %s\" % format_number(floor(prices[\"Jerma\"]))
+
+func _on_callum_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Callum\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Callum\"]
+		Generators.callumGensBought += 1
+		Achievements.callumsBought += 1
+		Achievements.totalSpent += prices[\"Callum\"]
+		playSound()
+		updatePrices()
+
+func _on_nathaniel_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Nathaniel\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Nathaniel\"]
+		Generators.nathanielGensBought += 1
+		Achievements.nathanielsBought += 1
+		Achievements.totalSpent += prices[\"Nathaniel\"]
+		playSound()
+		updatePrices()
+
+func _on_taylor_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Taylor\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Taylor\"]
+		Generators.taylorGensBought += 1
+		Achievements.taylorsBought += 1
+		Achievements.totalSpent += prices[\"Taylor\"]
+		playSound()
+		updatePrices()
+
+func _on_wilson_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Wilson\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Wilson\"]
+		Generators.wilsonGensBought += 1
+		Achievements.wilsonsBought += 1
+		Achievements.totalSpent += prices[\"Wilson\"]
+		playSound()
+		updatePrices()
+		
+func _on_green_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Green\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Green\"]
+		Generators.greenGensBought += 1
+		Achievements.greensBought += 1
+		Achievements.totalSpent += prices[\"Green\"]
+		playSound()
+		updatePrices()
+
+func _on_red_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Red\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Red\"]
+		Generators.redGensBought += 1
+		Achievements.redsBought += 1
+		Achievements.totalSpent += prices[\"Red\"]
+		playSound()
+		updatePrices()
+
+func _on_jerma_gen_pressed() -> void:
+	if SaveGame.data[\"clicks\"] >= prices[\"Jerma\"]:
+		SaveGame.data[\"clicks\"] -= prices[\"Jerma\"]
+		Generators.jermaGensBought += 1
+		Achievements.jermasBought += 1
+		Achievements.totalSpent += prices[\"Jerma\"]
+		playSound()
+		updatePrices()
+
+func _process(_delta: float) -> void:
+	youHave.text = \"You have: %s\" % format_number(SaveGame.data[\"clicks\"])
+
+func _on_touch_screen_button_pressed() -> void:
+	removeMe.emit(\"Tesco\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hno3x"]
+
+[node name="Tesco" type="Node2D"]
+script = SubResource("GDScript_s23y5")
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(4, 3.375)
+texture = ExtResource("1_qivt3")
+centered = false
+
+[node name="Clickables" type="Node2D" parent="."]
+
+[node name="CallumGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(1.54972e-05, 4)
+scale = Vector2(0.532558, 0.384483)
+texture_normal = ExtResource("2_4d6h1")
+
+[node name="NathanielGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(1.52588e-05, 358)
+scale = Vector2(0.212037, 0.116667)
+texture_normal = ExtResource("3_0bgg6")
+
+[node name="TaylorGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(1.5378e-05, 714)
+scale = Vector2(0.0762032, 0.0555)
+texture_normal = ExtResource("4_dttdd")
+
+[node name="WilsonGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(334, 4)
+scale = Vector2(0.190833, 0.13875)
+texture_normal = ExtResource("5_rl81q")
+
+[node name="GreenGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(334, 360)
+scale = Vector2(1.52667, 1.12121)
+texture_normal = ExtResource("6_8t0vp")
+
+[node name="RedGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(334, 716)
+scale = Vector2(0.317614, 0.24052)
+texture_normal = ExtResource("7_cy204")
+
+[node name="JermaGen" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(920, 314)
+scale = Vector2(0.406836, 0.55315)
+texture_normal = ExtResource("8_gqm6a")
+
+[node name="Prices" type="Node2D" parent="."]
+
+[node name="CallumPrice" type="RichTextLabel" parent="Prices"]
+offset_top = 226.0
+offset_right = 540.0
+offset_bottom = 537.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "Cost: 123.23k"
+
+[node name="NathanielPrice" type="RichTextLabel" parent="Prices"]
+offset_top = 582.0
+offset_right = 540.0
+offset_bottom = 893.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "Cost: 123.23k"
+
+[node name="TaylorPrice" type="RichTextLabel" parent="Prices"]
+offset_top = 936.0
+offset_right = 540.0
+offset_bottom = 1247.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "Cost: 123.23k"
+
+[node name="WilsonPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 334.0
+offset_top = 226.0
+offset_right = 874.0
+offset_bottom = 537.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "Cost: 123.23k"
+
+[node name="GreenPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 334.0
+offset_top = 582.0
+offset_right = 874.0
+offset_bottom = 893.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "Cost: 123.23k"
+
+[node name="RedPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 334.0
+offset_top = 935.0
+offset_right = 874.0
+offset_bottom = 1246.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 150
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "Cost: 123.23k"
+
+[node name="JermaPrice" type="RichTextLabel" parent="Prices"]
+offset_left = 920.0
+offset_top = 712.0
+offset_right = 2150.0
+offset_bottom = 1122.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 200
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "Cost: 123.23k"
+
+[node name="CaChing" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_c7td8")
+volume_db = 24.0
+
+[node name="Sus" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_afeim")
+
+[node name="Return" type="Node2D" parent="."]
+position = Vector2(1474, 900)
+scale = Vector2(2.76, 2.76)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Return"]
+offset_left = 37.0
+offset_top = -314.0
+offset_right = 478.0
+offset_bottom = -114.0
+scale = Vector2(0.26087, 0.26087)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 119
+text = "Return"
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Return"]
+position = Vector2(84.3623, -298.667)
+scale = Vector2(5.68, 1.49002)
+shape = SubResource("RectangleShape2D_hno3x")
+
+[node name="YouHave" type="RichTextLabel" parent="."]
+offset_left = 746.0
+offset_top = -1.0
+offset_right = 2443.0
+offset_bottom = 209.0
+scale = Vector2(0.42431, 0.42431)
+theme_override_font_sizes/normal_font_size = 200
+theme_override_styles/normal = ExtResource("3_i3k4v")
+text = "You have: 234.23k"
+
+[connection signal="pressed" from="Clickables/CallumGen" to="." method="_on_callum_gen_pressed"]
+[connection signal="pressed" from="Clickables/NathanielGen" to="." method="_on_nathaniel_gen_pressed"]
+[connection signal="pressed" from="Clickables/TaylorGen" to="." method="_on_taylor_gen_pressed"]
+[connection signal="pressed" from="Clickables/WilsonGen" to="." method="_on_wilson_gen_pressed"]
+[connection signal="pressed" from="Clickables/GreenGen" to="." method="_on_green_gen_pressed"]
+[connection signal="pressed" from="Clickables/RedGen" to="." method="_on_red_gen_pressed"]
+[connection signal="pressed" from="Clickables/JermaGen" to="." method="_on_jerma_gen_pressed"]
+[connection signal="pressed" from="Return/TouchScreenButton" to="." method="_on_touch_screen_button_pressed"]

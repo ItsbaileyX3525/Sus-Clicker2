@@ -1,0 +1,421 @@
+[gd_scene load_steps=9 format=3 uid="uid://be30ovs3rfyk4"]
+
+[ext_resource type="Texture2D" uid="uid://chceko8lvh2o8" path="res://Assets/background/Settingsbg.jpg" id="1_t2g5n"]
+[ext_resource type="Theme" uid="uid://c058f0k8g1bgp" path="res://styles/optionMenu.tres" id="2_6ax5f"]
+[ext_resource type="AudioStream" uid="uid://bgco7gvctgscj" path="res://Assets/audio/memes/cotton.wav" id="2_ma0ge"]
+[ext_resource type="Texture2D" uid="uid://b0t8y6nov3763" path="res://Assets/paste.png" id="2_qve6o"]
+
+[sub_resource type="GDScript" id="GDScript_wpue8"]
+script/source = "extends Node2D
+
+@onready var optionButton: OptionButton = $Music/HBoxContainer/OptionButton
+@onready var optionButton2: OptionButton = $Music/HBoxContainer/OptionButton2
+@onready var masterVol: RichTextLabel = $Music/MasterVol
+@onready var volumeSlider: HSlider = $Music/HSlider
+@onready var codeEnter: TextEdit = $Codes/CodeEnter
+
+const URL = \"https://raw.githubusercontent.com/ItsbaileyX3525/sus-clicker-2.0/main/codes.txt\"
+var http_request : HTTPRequest
+var realVolume: int
+var catergory: int
+
+var data: Dictionary = SaveGame.data
+
+signal removeMe(node: String)
+
+var songNames := {
+	1: {
+		1: [\"https://audio.jukehost.co.uk/NDYl6AJWvoytWWicPexxaosakZczSuZJ\", \"ngnl\"],
+		2: [\"https://audio.jukehost.co.uk/Axyq1406DLYRThCHbTHKkpLrzwSpW9o5\", \"weAre\"],
+		3: [\"https://audio.jukehost.co.uk/jvzpO49du5koKs08i88LDqDrLqYwrrFg\", \"OverTheTop\"],
+		4: [\"https://audio.jukehost.co.uk/rKxONIEF89OVY5bwvHSGYldYu8jEScqz\", \"STORYSEEKER\"],
+		5: [\"https://audio.jukehost.co.uk/wbjSWotG4NSu73lt0WXFsiSJszZfFhLz\", \"TitForTat\"]
+	},
+	2: {
+		1: [\"https://audio.jukehost.co.uk/0gMqPj9k9AcokM0lJe7zRZyjUJnmXSsp\", \"Survival\"],
+		2: [\"https://audio.jukehost.co.uk/Iutik9SaTbpuwiqMs3rMlJ2yPBp0ZHjZ\", \"Stan\"],
+		3: [\"https://audio.jukehost.co.uk/XLIPNX3gvKo8x9TPCXi825l4g95QFOsW\", \"RealSlimShady\"],
+		4: [\"https://audio.jukehost.co.uk/qcr1kdoNB9sIyIBF2vAvfvDuxW1mWeNg\", \"NotAfraid\"],
+		5: [\"https://audio.jukehost.co.uk/Zu5LVhlVXjkvIPDxXKB7mTP5rWCjlpXp\", \"LoseYourself\"]
+	}
+}
+
+
+
+func add_item_page1() -> void:
+	optionButton.clear()
+	catergory = 0
+	optionButton.add_item(\"Normal\")
+	optionButton.add_item(\"Take on me\")
+	optionButton.add_item(\"Wilson homeland\")
+	optionButton.add_item(\"MARTIN LUTHER KING!\")
+	optionButton.add_item(\"Piers Morgan\")
+	
+func add_item_page2() -> void:
+	optionButton.clear()
+	catergory = 1
+	optionButton.add_item(\"This game - NGNL\")
+	optionButton.add_item(\"We Are - One Piece\")
+	optionButton.add_item(\"Over The Top - One Piece\")
+	optionButton.add_item(\"STORYSEEKER - TTIGRAAS\")
+	optionButton.add_item(\"Tit For Tat - Cautious Hero\")
+	
+func add_item_page3() -> void:
+	optionButton.clear()
+	catergory = 2
+	optionButton.add_item(\"Survival\")
+	optionButton.add_item(\"Stan\")
+	optionButton.add_item(\"Real Slim Shady\")
+	optionButton.add_item(\"Not Afraid\")
+	optionButton.add_item(\"Lose Yourself\")
+	
+func add_item_catergoty() -> void:
+	optionButton2.add_item(\"Normal\")
+	optionButton2.add_item(\"Anime\")
+	optionButton2.add_item(\"Eminem\")
+
+func remap_value(value: float, from_min: float, from_max: float, to_min: float, to_max: float) -> float:
+	return (value - from_min) / (from_max - from_min) * (to_max - to_min) + to_min
+	
+func _ready() -> void:
+	add_item_page1()
+	add_item_catergoty()
+	if \"volume\" in data:
+		var vol: String = str(data[\"volume\"])
+		volumeSlider.value = int(vol)
+		masterVol.text = \"Master volume: %s\" % str(remap_value(int(vol), -80, 20, 0, 100))
+	if \"musicChosen\" in data:
+		if typeof(data[\"musicChosen\"]) == TYPE_INT:
+			var music: int = int(data[\"musicChosen\"])
+			optionButton.select(music)
+	if \"clickSound\" in data:
+		$ClickSounds/ClickSounds.selected = int(data[\"clickSound\"])
+	if \"background\" in data:
+		$BackgroundChanger/BackgroundSelect.selected = int(data[\"background\"])
+
+func _on_option_button_item_selected(index: int) -> void:
+	if catergory == 0:
+		MusicPlayer.setMusic(index)
+		SaveGame.data[\"musicChosen\"] = index
+	else:
+		MusicDownloader.download(songNames[catergory][index+1][0],songNames[catergory][index+1][1])
+		SaveGame.data[\"musicChosen\"] = [songNames[catergory][index+1][0],songNames[catergory][index+1][1]]
+	SaveGame.data[\"catergoryMusic\"] = catergory
+
+func _on_option_button_2_item_selected(index: int) -> void:
+	match index:
+		0:
+			add_item_page1()
+		1:
+			add_item_page2()
+		2:
+			add_item_page3()	
+
+func _on_touch_screen_button_pressed() -> void:
+	removeMe.emit(\"Settings\")
+
+func _on_h_slider_value_changed(value: float) -> void:
+	masterVol.text = \"Master volume: %s\" % str(remap_value(value, -80, 20, 0, 100))
+	if value > 0:
+		value /= 4
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(\"Master\"), value)
+	realVolume = int(value)
+
+func _on_h_slider_drag_ended(_value_changed: bool) -> void:
+	SaveGame.data[\"volume\"] = realVolume
+
+func _on_confirm_code_pressed() -> void:
+	if codeEnter.text == \"Motherlode\":
+		SaveGame.data[\"clicks\"] += 25000000000000
+	elif codeEnter.text == \"CottonEyeJoe\":
+		$AudioStreamPlayer.play()
+
+const LIMIT: int = 15
+var current_text := ''
+
+func _on_code_enter_text_changed() -> void:
+	var new_text : String = codeEnter.text
+
+	
+	if new_text.length() > LIMIT:
+		codeEnter.text = current_text
+		codeEnter.set_caret_column(codeEnter.text.length())
+	
+	var withoutSpaces = codeEnter.text.replace(\"\\n\", \"\").replace(\"\\r\", \"\")
+	if withoutSpaces == codeEnter.text:
+		current_text = codeEnter.text
+	else:
+		codeEnter.text = withoutSpaces
+		current_text = codeEnter.text
+		codeEnter.set_caret_column(codeEnter.text.length())	
+
+
+func _on_background_select_item_selected(index: int) -> void:
+	SaveGame.data[\"background\"] = index
+	for e in $\"..\".backgrounds:
+		e.visible = false
+	$\"..\".backgrounds[index].visible = true
+
+
+func _on_click_sounds_item_selected(index: int) -> void:
+	SaveGame.data[\"clickSound\"] = index
+"
+
+[sub_resource type="GDScript" id="GDScript_03rec"]
+script/source = "extends Node2D
+
+@onready var song_enter: TextEdit = $SongEnter
+@onready var confirm_song: TouchScreenButton = $ConfirmSong
+@onready var paste_song: TouchScreenButton = $PasteSong
+
+
+func _on_paste_song_released() -> void:
+	var current_clipboard = DisplayServer.clipboard_get()
+	song_enter.text = current_clipboard
+
+
+func _on_confirm_song_released() -> void:
+	MusicDownloader.download(song_enter.text, song_enter.text)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hrftr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1tltg"]
+
+[node name="Settings" type="Node2D"]
+script = SubResource("GDScript_wpue8")
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(1.50391, 1.50972)
+texture = ExtResource("1_t2g5n")
+centered = false
+
+[node name="Music" type="Node2D" parent="."]
+position = Vector2(1, 202)
+script = SubResource("GDScript_03rec")
+
+[node name="MasterVol" type="RichTextLabel" parent="Music"]
+offset_left = 1.0
+offset_top = 314.0
+offset_right = 1372.0
+offset_bottom = 489.0
+scale = Vector2(0.24, 0.24)
+theme_override_font_sizes/normal_font_size = 150
+text = "Master volume: 80"
+
+[node name="HSlider" type="HSlider" parent="Music"]
+offset_left = -1.0
+offset_top = 365.0
+offset_right = 257.0
+offset_bottom = 382.0
+scale = Vector2(1.32, 1.32)
+min_value = -80.0
+max_value = 20.0
+rounded = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Music"]
+offset_top = 35.0
+offset_right = 280.0
+offset_bottom = 135.0
+metadata/_edit_use_anchors_ = true
+
+[node name="OptionButton" type="OptionButton" parent="Music/HBoxContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme = ExtResource("2_6ax5f")
+theme_override_font_sizes/font_size = 32
+text_overrun_behavior = 3
+allow_reselect = true
+
+[node name="OptionButton2" type="OptionButton" parent="Music/HBoxContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme = ExtResource("2_6ax5f")
+theme_override_font_sizes/font_size = 32
+text_overrun_behavior = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Music"]
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.297736, 0.297736)
+
+[node name="Select" type="RichTextLabel" parent="Music/HBoxContainer2"]
+custom_minimum_size = Vector2(979, 146)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 140
+text = "Music selector:"
+
+[node name="Select2" type="RichTextLabel" parent="Music/HBoxContainer2"]
+custom_minimum_size = Vector2(1200, 146)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 140
+text = "Category selector:"
+
+[node name="SongEnter" type="TextEdit" parent="Music"]
+offset_left = 3.0
+offset_top = 135.0
+offset_right = 1236.0
+offset_bottom = 308.0
+scale = Vector2(0.52001, 0.52001)
+theme_override_font_sizes/font_size = 110
+placeholder_text = "Enter music url .ogg only"
+
+[node name="ConfirmSongText" type="RichTextLabel" parent="Music"]
+offset_left = 222.0
+offset_top = 238.0
+offset_right = 694.0
+offset_bottom = 363.0
+scale = Vector2(0.400019, 0.400019)
+theme_override_font_sizes/normal_font_size = 120
+text = "Confirm"
+
+[node name="ConfirmSong" type="TouchScreenButton" parent="Music"]
+position = Vector2(316, 260)
+scale = Vector2(9.08, 2.05665)
+shape = SubResource("RectangleShape2D_hrftr")
+
+[node name="PasteSong" type="TouchScreenButton" parent="Music"]
+position = Vector2(664, 130)
+scale = Vector2(0.393307, 0.393307)
+texture_normal = ExtResource("2_qve6o")
+
+[node name="BackgroundChanger" type="Node2D" parent="."]
+
+[node name="BackgroundSelect" type="OptionButton" parent="BackgroundChanger"]
+clip_contents = true
+custom_minimum_size = Vector2(280, 0)
+offset_top = 694.0
+offset_right = 844.0
+offset_bottom = 823.0
+scale = Vector2(0.41804, 0.472462)
+size_flags_horizontal = 0
+theme = ExtResource("2_6ax5f")
+theme_override_font_sizes/font_size = 120
+text_overrun_behavior = 3
+selected = 0
+item_count = 7
+popup/item_0/text = "Normal"
+popup/item_1/text = "Minecraft"
+popup/item_1/id = 1
+popup/item_2/text = "Fortnite"
+popup/item_2/id = 2
+popup/item_3/text = "Heyy"
+popup/item_3/id = 3
+popup/item_4/text = "Nick Cage sun"
+popup/item_4/id = 4
+popup/item_5/text = "Dhar Mann"
+popup/item_5/id = 5
+popup/item_6/text = "Backrooms"
+popup/item_6/id = 6
+
+[node name="BackgroundSelectText" type="RichTextLabel" parent="BackgroundChanger"]
+offset_top = 638.0
+offset_right = 1746.0
+offset_bottom = 938.0
+scale = Vector2(0.24, 0.24)
+theme_override_font_sizes/normal_font_size = 150
+text = "Background Selector:"
+metadata/_edit_use_anchors_ = true
+
+[node name="ClickSounds" type="Node2D" parent="."]
+
+[node name="ClickSounds" type="OptionButton" parent="ClickSounds"]
+clip_contents = true
+custom_minimum_size = Vector2(280, 0)
+offset_top = 838.0
+offset_right = 844.0
+offset_bottom = 967.0
+scale = Vector2(0.41804, 0.472462)
+size_flags_horizontal = 0
+theme = ExtResource("2_6ax5f")
+theme_override_font_sizes/font_size = 120
+text_overrun_behavior = 3
+selected = 0
+item_count = 4
+popup/item_0/text = "Normal"
+popup/item_1/text = "Death"
+popup/item_1/id = 1
+popup/item_2/text = "Oof"
+popup/item_2/id = 2
+popup/item_3/text = "Clang"
+popup/item_3/id = 3
+
+[node name="ClickSoundsText" type="RichTextLabel" parent="ClickSounds"]
+offset_top = 782.0
+offset_right = 1746.0
+offset_bottom = 1082.0
+scale = Vector2(0.24, 0.24)
+theme_override_font_sizes/normal_font_size = 150
+text = "Click Sound Selector:"
+metadata/_edit_use_anchors_ = true
+
+[node name="Codes" type="Node2D" parent="."]
+
+[node name="CodeEnter" type="TextEdit" parent="Codes"]
+offset_left = 1334.0
+offset_top = 314.0
+offset_right = 2174.0
+offset_bottom = 487.0
+scale = Vector2(0.52001, 0.52001)
+theme_override_font_sizes/font_size = 120
+placeholder_text = "Enter code..."
+
+[node name="ConfirmCodeText" type="RichTextLabel" parent="Codes"]
+offset_left = 1416.0
+offset_top = 417.0
+offset_right = 1888.0
+offset_bottom = 542.0
+scale = Vector2(0.400019, 0.400019)
+theme_override_font_sizes/normal_font_size = 120
+text = "Confirm"
+
+[node name="ConfirmCode" type="TouchScreenButton" parent="Codes"]
+position = Vector2(1510, 439)
+scale = Vector2(9.08, 2.05665)
+shape = SubResource("RectangleShape2D_hrftr")
+
+[node name="Return" type="Node2D" parent="."]
+position = Vector2(1500, 896)
+scale = Vector2(2.76, 2.76)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Return"]
+offset_left = 37.0
+offset_top = -314.0
+offset_right = 478.0
+offset_bottom = -164.0
+scale = Vector2(0.26087, 0.26087)
+theme_override_font_sizes/normal_font_size = 119
+text = "Return"
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Return"]
+position = Vector2(84.3623, -298.667)
+scale = Vector2(5.68, 1.49002)
+shape = SubResource("RectangleShape2D_1tltg")
+
+[node name="CustomMusicWarning" type="RichTextLabel" parent="."]
+offset_right = 1746.0
+offset_bottom = 550.0
+scale = Vector2(0.24, 0.24)
+theme_override_font_sizes/normal_font_size = 150
+text = "A network connection is required for first time playing of a custom song."
+metadata/_edit_use_anchors_ = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_ma0ge")
+volume_db = 6.9
+
+[connection signal="drag_ended" from="Music/HSlider" to="." method="_on_h_slider_drag_ended"]
+[connection signal="value_changed" from="Music/HSlider" to="." method="_on_h_slider_value_changed"]
+[connection signal="item_selected" from="Music/HBoxContainer/OptionButton" to="." method="_on_option_button_item_selected"]
+[connection signal="item_selected" from="Music/HBoxContainer/OptionButton2" to="." method="_on_option_button_2_item_selected"]
+[connection signal="released" from="Music/ConfirmSong" to="Music" method="_on_confirm_song_released"]
+[connection signal="released" from="Music/PasteSong" to="Music" method="_on_paste_song_released"]
+[connection signal="item_selected" from="BackgroundChanger/BackgroundSelect" to="." method="_on_background_select_item_selected"]
+[connection signal="item_selected" from="ClickSounds/ClickSounds" to="." method="_on_click_sounds_item_selected"]
+[connection signal="text_changed" from="Codes/CodeEnter" to="." method="_on_code_enter_text_changed"]
+[connection signal="pressed" from="Codes/ConfirmCode" to="." method="_on_confirm_code_pressed"]
+[connection signal="pressed" from="Return/TouchScreenButton" to="." method="_on_touch_screen_button_pressed"]

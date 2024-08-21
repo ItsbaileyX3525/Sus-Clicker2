@@ -1,0 +1,188 @@
+[gd_scene load_steps=8 format=3 uid="uid://brn7g17hub5mp"]
+
+[ext_resource type="Texture2D" uid="uid://casjf16hoaas6" path="res://Assets/background/Morshu_cutscene.png" id="1_xh6qa"]
+[ext_resource type="Texture2D" uid="uid://c5k53h8hcnvkm" path="res://Assets/background/ShopBG.jpg" id="2_4nh6x"]
+[ext_resource type="Texture2D" uid="uid://cqslatvu58r2m" path="res://Assets/background/goofy man.jpg" id="3_sy4ny"]
+[ext_resource type="Texture2D" uid="uid://cixpbjtctxqvh" path="res://Assets/background/Walter_White.webp" id="4_wtl8n"]
+[ext_resource type="Texture2D" uid="uid://bqhurfjv1xmc5" path="res://Assets/background/chain.webp" id="5_tmngf"]
+
+[sub_resource type="GDScript" id="GDScript_n0nsm"]
+script/source = "extends Node2D
+
+signal removeMe(node: String)
+
+var inSubScene: bool = false
+@onready var enter_breaking_bad_text: RichTextLabel = $Texts/EnterBreakingBadText
+@onready var enter_goofy_text: RichTextLabel = $Texts/EnterGoofyText
+
+@onready var shopScenes: Dictionary = {
+	\"Tesco\" : preload(\"res://scenes/tesco.tscn\"),
+	\"Meme\" : preload(\"res://scenes/meme.tscn\"),
+	\"BreakingBad\" : preload(\"res://scenes/breaking_bad.tscn\"),
+}
+
+var tescoNode: Node2D
+var memeNode: Node2D
+var breakingBadNode: Node2D
+
+var canEnterMeme: bool = false
+var canEnterBB: bool = false
+
+@onready var lockedIcons: Array = [
+	[$Clickables/Locked1, $Clickables/EnterGoofy],
+	[$Clickables/Locked2, $Clickables/EnterBreakingBad]
+]
+
+func removeNode(type: String) -> void:
+	var scenesToRemove: Dictionary = {
+		\"Tesco\" : tescoNode,
+		\"Meme\" : memeNode,
+		\"BreakingBad\" : breakingBadNode,
+	}
+
+	remove_child(scenesToRemove[type])
+	
+	await get_tree().create_timer(.1).timeout
+	inSubScene = false
+
+func _ready() -> void:
+	var data = SaveGame.data
+	if \"prestiges\" in data:
+		if data[\"prestiges\"] >= 3:
+			enter_goofy_text.text = \"Enter meme shop\"
+			canEnterMeme = true
+			lockedIcons[0][0].visible=false
+			lockedIcons[0][1].modulate = Color(1,1,1,1)
+		if data[\"prestiges\"] >= 10:
+			enter_breaking_bad_text.text = \"Enter BB shop\"
+			canEnterBB = true
+			lockedIcons[1][0].visible=false
+			lockedIcons[1][1].modulate = Color(1,1,1,1)
+
+func _on_enter_tesco_pressed() -> void:
+	if not inSubScene:
+		tescoNode = shopScenes[\"Tesco\"].instantiate()
+		add_child(tescoNode)
+		tescoNode.removeMe.connect(removeNode)
+		inSubScene = true
+
+func _on_enter_goofy_pressed() -> void:
+	if not inSubScene and canEnterMeme:
+		memeNode = shopScenes[\"Meme\"].instantiate()
+		add_child(memeNode)
+		memeNode.removeMe.connect(removeNode)
+		inSubScene = true
+	
+func _on_enter_breaking_bad_pressed() -> void:
+	if not inSubScene and canEnterBB:
+		breakingBadNode = shopScenes[\"BreakingBad\"].instantiate()
+		add_child(breakingBadNode)
+		breakingBadNode.removeMe.connect(removeNode)
+		inSubScene = true
+	
+func _on_touch_screen_button_pressed() -> void:
+	if not inSubScene:
+		removeMe.emit(\"Shop\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0ph1t"]
+
+[node name="ShopEntrence" type="Node2D"]
+script = SubResource("GDScript_n0nsm")
+
+[node name="Background" type="Sprite2D" parent="."]
+modulate = Color(0.544974, 0.544974, 0.544974, 1)
+scale = Vector2(5, 4.5)
+texture = ExtResource("1_xh6qa")
+centered = false
+
+[node name="Clickables" type="Node2D" parent="."]
+position = Vector2(-107, -87)
+scale = Vector2(1.6, 1.6)
+
+[node name="EnterTesco" type="TouchScreenButton" parent="Clickables"]
+position = Vector2(95, 121.25)
+scale = Vector2(0.639583, 0.449219)
+texture_normal = ExtResource("2_4nh6x")
+
+[node name="EnterGoofy" type="TouchScreenButton" parent="Clickables"]
+modulate = Color(1, 1, 1, 0.568627)
+position = Vector2(95, 375.833)
+scale = Vector2(0.715687, 0.4027)
+texture_normal = ExtResource("3_sy4ny")
+
+[node name="EnterBreakingBad" type="TouchScreenButton" parent="Clickables"]
+self_modulate = Color(1, 1, 1, 0.572549)
+position = Vector2(591.875, 121.25)
+scale = Vector2(0.240104, 0.09375)
+texture_normal = ExtResource("4_wtl8n")
+
+[node name="Locked1" type="TextureRect" parent="Clickables"]
+offset_left = 95.0
+offset_top = 376.0
+offset_right = 399.0
+offset_bottom = 520.0
+texture = ExtResource("5_tmngf")
+expand_mode = 1
+
+[node name="Locked2" type="TextureRect" parent="Clickables"]
+offset_left = 591.0
+offset_top = 121.0
+offset_right = 880.0
+offset_bottom = 271.0
+texture = ExtResource("5_tmngf")
+expand_mode = 1
+
+[node name="Texts" type="Node2D" parent="."]
+position = Vector2(-69, 20)
+scale = Vector2(1.2, 1.2)
+
+[node name="EnterTescoText" type="RichTextLabel" parent="Texts"]
+offset_left = 91.0
+offset_top = 263.0
+offset_right = 1452.0
+offset_bottom = 502.0
+scale = Vector2(0.304311, 0.304311)
+theme_override_font_sizes/normal_font_size = 230
+text = "Enter tesco"
+
+[node name="EnterGoofyText" type="RichTextLabel" parent="Texts"]
+offset_left = 95.0
+offset_top = 608.0
+offset_right = 1442.0
+offset_bottom = 1050.0
+scale = Vector2(0.304311, 0.304311)
+theme_override_font_sizes/normal_font_size = 210
+text = "*3 prestiges to enter"
+
+[node name="EnterBreakingBadText" type="RichTextLabel" parent="Texts"]
+offset_left = 758.0
+offset_top = 269.0
+offset_right = 2065.0
+offset_bottom = 901.0
+scale = Vector2(0.304311, 0.304311)
+theme_override_font_sizes/normal_font_size = 210
+text = "*10 prestiges to enter"
+
+[node name="Return" type="Node2D" parent="."]
+position = Vector2(1474, 900)
+scale = Vector2(2.76, 2.76)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Return"]
+offset_left = 37.0
+offset_top = -314.0
+offset_right = 478.0
+offset_bottom = -127.0
+scale = Vector2(0.26087, 0.26087)
+theme_override_font_sizes/normal_font_size = 119
+text = "Return"
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Return"]
+position = Vector2(84.3623, -298.667)
+scale = Vector2(5.68, 1.49002)
+shape = SubResource("RectangleShape2D_0ph1t")
+
+[connection signal="pressed" from="Clickables/EnterTesco" to="." method="_on_enter_tesco_pressed"]
+[connection signal="pressed" from="Clickables/EnterGoofy" to="." method="_on_enter_goofy_pressed"]
+[connection signal="pressed" from="Clickables/EnterBreakingBad" to="." method="_on_enter_breaking_bad_pressed"]
+[connection signal="pressed" from="Return/TouchScreenButton" to="." method="_on_touch_screen_button_pressed"]

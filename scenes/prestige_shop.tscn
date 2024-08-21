@@ -1,0 +1,69 @@
+[gd_scene load_steps=4 format=3 uid="uid://cnpo0kw1dmeer"]
+
+[ext_resource type="Texture2D" uid="uid://diwsm0a7edsiw" path="res://Assets/construction.webp" id="1_kj6kj"]
+
+[sub_resource type="GDScript" id="GDScript_frjnl"]
+script/source = "extends Node2D
+
+signal removeMe(node: String)
+
+
+
+func _on_return_button_pressed() -> void:
+	removeMe.emit(\"PrestigeShop\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sobv1"]
+
+[node name="PrestigeShop" type="Node2D"]
+script = SubResource("GDScript_frjnl")
+
+[node name="TopBar" type="Node2D" parent="."]
+
+[node name="Main" type="ColorRect" parent="TopBar"]
+offset_right = 1920.0
+offset_bottom = 118.0
+color = Color(0.901961, 0.909804, 0.921569, 1)
+
+[node name="Under" type="ColorRect" parent="TopBar"]
+offset_top = 105.0
+offset_right = 1920.0
+offset_bottom = 118.0
+color = Color(0.694118, 0.698039, 0.709804, 1)
+
+[node name="Title" type="RichTextLabel" parent="TopBar"]
+offset_top = 11.0
+offset_right = 2824.0
+offset_bottom = 136.0
+scale = Vector2(0.68, 0.68)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 120
+bbcode_enabled = true
+text = "[center]Prestige Shop[/center]"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="ReturnText" type="RichTextLabel" parent="TopBar"]
+offset_top = 24.0
+offset_right = 2824.0
+offset_bottom = 149.0
+scale = Vector2(0.505862, 0.505862)
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 120
+bbcode_enabled = true
+text = "RETURN"
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="ReturnButton" type="TouchScreenButton" parent="TopBar"]
+position = Vector2(127, 49)
+scale = Vector2(12.3884, -2.89175)
+shape = SubResource("RectangleShape2D_sobv1")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_top = 118.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+texture = ExtResource("1_kj6kj")
+
+[connection signal="pressed" from="TopBar/ReturnButton" to="." method="_on_return_button_pressed"]
